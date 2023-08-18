@@ -22,35 +22,30 @@ sudo tee <<EOF >/dev/null $HOME/kroma-up/.env
 ############################### DEFAULT #####################################
 # Network to run the node on ("sepolia")
 NETWORK_NAME=sepolia
-
 IMAGE_TAG__KROMA_GETH=v0.1.0
 IMAGE_TAG__KROMA_NODE=v0.2.2
 IMAGE_TAG__KROMA_VALIDATOR=v0.2.2
-
 # Specifies the L1 RPC ENDPOINT. 
 # By default, you can check and use an rpc endpoint with the following path: https://sepolia.dev/, but you can also use Alchemy or Infura, etc.
 L1_RPC_ENDPOINT=https://rpc.sepolia.org
-
 KROMA_GETH__BOOT_NODES=enode://94d5e63c23a091a891769048203faa77f08ec4d3ea023a3fe92810d0406329429de841d0500bc9eb0ca5ecb8e030ea38661669bf3c4fc132920a60da03ab8b57@43.200.87.213:30304?discport=30303,enode://d4c12295f2fa7b2e66688d79266086c6ea97ba1cbc63e770a96b05817412ec66ef49058ae86de2afc5aafbc2f54acb36503ac32580ee98e289e86985e97bcbcb@15.165.246.25:30304?discport=30303
 KROMA_NODE__BOOT_NODES=/ip4/43.200.87.213/tcp/9003/p2p/16Uiu2HAmHh1piCDZ5bqD2gzY5nrnN8Aakt6E4xeWLCgNoZKGNKT5,/ip4/15.165.246.25/tcp/9003/p2p/16Uiu2HAmN7x7mKBZPGiMvrMeBN3Dn1ZbLzEe8i1vSug2gfCtHLnt
-
 ####################################
 # The following settings are used to act as a validator.
 # We recommend the values we provide as examples by default
-
 KROMA_VALIDATOR__OUTPUT_SUBMITTER_DISABLED=false
-
 # To act as a validator, you must use either your account's PRIVATE_KEY or your MNEMONIC and HD_PATH.
 KROMA_VALIDATOR__MNEMONIC=
 KROMA_VALIDATOR__HD_PATH=
 KROMA_VALIDATOR__PRIVATE_KEY=$KROMA_KEY
-
 # TBD
 KROMA_VALIDATOR__CHALLENGER_DISABLED=true
 KROMA_VALIDATOR__GUARDIAN_ENABLED=false
 KROMA_VALIDATOR__PROVER_GRPC=
 EOF
 
+
+source $HOME/kroma-up/.env
 sleep 1
 
 sudo tee <<EOF >/dev/null $HOME/kroma-up/docker-compose.yml
@@ -61,7 +56,6 @@ x-logging: &logging
     options:
       max-size: 10m
       max-file: "3"
-
 services:
   kroma-geth:
     container_name: kroma-geth
@@ -88,7 +82,6 @@ services:
       - vanilla
       - validator
     <<: *logging
-
   kroma-node:
     depends_on:
       - kroma-geth
@@ -112,7 +105,6 @@ services:
       - vanilla
       - validator
     <<: *logging
-
   kroma-validator:
     depends_on:
       - kroma-node
@@ -124,7 +116,6 @@ services:
     profiles:
       - validator
     <<: *logging
-
 volumes:
   db:
 EOF
